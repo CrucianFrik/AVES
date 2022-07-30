@@ -1,7 +1,7 @@
 #include "GPS_Path.h"
 
-GPS_Path::GPS_Path(const std::string &f_p, const std::string &reading_file_name, PathType type, double m_l, double r_r,
-                   int sim = 1000) : step_in_miters(sim), files_path(f_p), min_lengh(m_l), radius_of_reaching(r_r) {
+GPS_Path::GPS_Path(const std::string &f_p, const std::string &reading_file_name, PathType type, double m_l, double curve_R, double r_r = 10,
+                   int step_in_miters_ = 1000) : step_in_miters(step_in_miters_), files_path(f_p), min_dist(m_l), min_radius_of_curvature(curve_R), radius_of_reaching(r_r) {
     logs.start_process("INIT GPS_Path");
 
     std::ifstream file(files_path + reading_file_name);
@@ -19,10 +19,8 @@ GPS_Path::GPS_Path(const std::string &f_p, const std::string &reading_file_name,
     char *t = ctime(&now);
 
     if (type == PathType::curve)
-//        path_line = CatmullROM{control_points, files_path + add_time("CatmellROM_path") + ".txt",
-  //                             float(step_in_miters)}.get_path();
-        path_line = CatmullROM{control_points, files_path + "CatmullROM_path_" + ".txt",
-                               float(step_in_miters)}.get_path();
+        path_line = CatmullROM{control_points, files_path + add_time("CatmullROM_path") + ".txt",
+                               min_radius_of_curvature, float(step_in_miters), }.get_path();
     if (type == PathType::polyline)
         path_line = Polyline{control_points, files_path + add_time("Polyline_path") + ".txt",
                              float(step_in_miters)}.get_path();
@@ -56,7 +54,7 @@ void GPS_Path::write_in_NMEA() {
 
 Vec3D GPS_Path::get_next_point(Vec3D curr_pos, bool need_to_set = 1) {
     int p_id = last_point_id + 1;
-    while (path_line[p_id].lengh(curr_pos) < min_lengh)
+    while (path_line[p_id].lengh(curr_pos) < min_dist)
         p_id++;
     if (need_to_set)
         target_point_id = p_id;

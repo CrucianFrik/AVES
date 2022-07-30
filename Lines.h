@@ -67,7 +67,7 @@ private:
 //calass for CatmullROM-curve-trajectory building
 class CatmullROM : public Line {
 public:
-    CatmullROM(const std::vector<Vec3D> &points_, std::string f_add, double ps = 10, double min_R_ = 0.001)
+    CatmullROM(const std::vector<Vec3D> &points_, std::string f_add, double min_R_, double ps = 10)
     : start_p(points_[0]), end_p(points_[points_.size() -1]), min_R(min_R_) {
         points = points_;
         files_addres = std::move(f_add);
@@ -78,7 +78,8 @@ public:
         }
         logs.start_process("CATMULLROM BUILDING");
 
-        //control_R();
+        if (min_R)
+            control_R();
         build();
         std::ofstream points_file;
         points_file.open("points.txt");

@@ -15,11 +15,14 @@ private:
     int step_in_miters;
     int last_point_id;
     int target_point_id;
-    double min_lengh;
-    double radius_of_reaching;
+    double radius_of_reaching; // см check_if_pos_in_point(Vec3D)
+    double min_dist; // при запросе get_next_point выдаётся точка, принадлежащая к траектории, находящаяся на расстоянии не меньше min_dist
+    double min_radius_of_curvature; // минимальный радиус кривизны траектории в метрах
+    // (! в вычислениях переводится в дельту по широте, что приводит к погрешности
+    // (в пределах Жуковского незначитальная, но точная величина не известна))
 
 public:
-    GPS_Path(const std::string &, const std::string &, PathType, double, double, int);
+    GPS_Path(const std::string &, const std::string &, PathType, double, double, double, int);
 
     //creates file, where gps data written in NMEA $GPRMC format: "ddmm.mmmm,N,dddmm.mmmm,M"
     void write_in_NMEA();

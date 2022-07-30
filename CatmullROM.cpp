@@ -2,24 +2,28 @@
 
 
 void CatmullROM::control_R(){
-
     std::ofstream center_file;
     center_file.open("centers.txt");
 
     std::ofstream touch_point_file;
     touch_point_file.open("touch_points.txt");
 
+    double deg_lon = 111003;
+    double deg_lat = cos(points[0].x)*6360*2*M_PI*1000/360; // 1000 -- km to m
+    double min_R_in_d_lat = ((min_R / deg_lon) + (min_R / deg_lat))/2;
+
+
+    std::cout << deg_lat << "\n";
 
     if (points.size() <= 2)
         return;
+
     std::vector<Vec3D> points_full;
     points_full.push_back(points[0]);
 
     for (int i = 1; i < points.size() - 1 ; i++) {
         double rho01 = points[i].lengh(points[i - 1]);
         double rho21 = points[i].lengh(points[i + 1]);
-       // std::cout << points[i].x << ", " << points[i].y << "\n";
-        //std::cout << rho01 << ", " << rho21 << "\n";
 
         Vec2D V10 = Vec2D{(points[i - 1].x - points[i].x), (points[i - 1].y - points[i].y)} / rho01;
         Vec2D V12 = Vec2D{(points[i + 1].x - points[i].x), (points[i + 1].y - points[i].y)} / rho21;
@@ -33,7 +37,8 @@ void CatmullROM::control_R(){
         double mid_b = points[i].y - mid_k*points[i].x;
 
         double rho1m = mid_point.lengh(points[i].get_2d());
-        Vec2D V1m = ((mid_point - points[i].get_2d()) / rho1m) * (100);
+        double len = sqrt(pow(mid_point.x - points[i].get_2d().x, 2) + pow(mid_point.y - points[i].get_2d().y, 2));
+        Vec2D V1m = ((mid_point - points[i].get_2d()) / len) * (min_R_in_d_lat);
 
         Vec2D center = V1m + points[i].get_2d();
 
@@ -53,24 +58,24 @@ void CatmullROM::control_R(){
             double k_1, k_2, b_1, b_2;
             Vec2D touch_point1, touch_point2;
 
-            double dx = x1-x0; //Vec2D{x1, 50}.lengh(Vec2D{x0, 50});
-            double dy = y1-y0;//Vec2D{50, y1}.lengh(Vec2D{50, y1});
+            double dx = x1-x0;
+            double dy = y1-y0;
 
-            if (x0 - x1 == min_R) {
-                touch_point1 = Vec2D{x0 - min_R, y0};
-                k_2 = -(pow(dy, 2) - pow(min_R, 2)) / (2 * min_R * dy);
+            if (x0 - x1 == min_R_in_d_lat) {
+                touch_point1 = Vec2D{x0 - min_R_in_d_lat, y0};
+                k_2 = -(pow(dy, 2) - pow(min_R_in_d_lat, 2)) / (2 * min_R_in_d_lat * dy);
                 b_2 = y1 - k_2 * x1;
                 double x = (2 * x0 - 2 * k_2 * b_2 + 2 * k_2 * y0) / (2 * (1 + pow(k_2, 2)));
                 touch_point2 = Vec2D{x, k_2 * x + b_2};
-            } else if (x0 - x1 == -min_R) {
-                touch_point1 = Vec2D{x0 + min_R, y0};
-                k_2 = (pow(dy, 2) - pow(min_R, 2)) / (2 * min_R * dy);
+            } else if (x0 - x1 == -min_R_in_d_lat) {
+                touch_point1 = Vec2D{x0 + min_R_in_d_lat, y0};
+                k_2 = (pow(dy, 2) - pow(min_R_in_d_lat, 2)) / (2 * min_R_in_d_lat * dy);
                 b_2 = y1 - k_2 * x1;
                 double x = (2 * x0 - 2 * k_2 * b_2 + 2 * k_2 * y0) / (2 * (1 + pow(k_2, 2)));
                 touch_point2 = Vec2D{x, k_2 * x + b_2};
             } else {
-                k_1 = (dx * dy + min_R * sqrt(pow(dx, 2) + pow(dy, 2) - pow(min_R, 2))) / (pow(dx, 2) - pow(min_R, 2));
-                k_2 = (dx * dy - min_R * sqrt(pow(dx, 2) + pow(dy, 2) - pow(min_R, 2))) / (pow(dx, 2) - pow(min_R, 2));
+                k_1 = (dx * dy + min_R_in_d_lat * sqrt(pow(dx, 2) + pow(dy, 2) - pow(min_R_in_d_lat, 2))) / (pow(dx, 2) - pow(min_R_in_d_lat, 2));
+                k_2 = (dx * dy - min_R_in_d_lat * sqrt(pow(dx, 2) + pow(dy, 2) - pow(min_R_in_d_lat, 2))) / (pow(dx, 2) - pow(min_R_in_d_lat, 2));
                 b_1 = y1 - k_1 * x1;
                 b_2 = y1 - k_2 * x1;
                 double x_1 = (2 * x0 - 2 * k_1 * b_1 + 2 * k_1 * y0) / (2 * (1 + pow(k_1, 2)));
@@ -83,9 +88,6 @@ void CatmullROM::control_R(){
             touch_point_file << touch_point1.x << " " << touch_point1.y << "\n";
             touch_point_file << touch_point2.x << " " << touch_point2.y << "\n";
 
-           // if (j == i-1)
-          //      points_full.emplace_back(Vec3D{(points[i].x - points[i - 1].x) / 2, (points[i].y - points[i - 1].y) / 2,
-            //                                   (points[i].h - points[i - 1].h) / 2} + points[i - 1]);
             if (j == i-1) {
                 if (points[i].get_2d().lengh(touch_point1) < points[i].get_2d().lengh(touch_point2))
                     points_full.push_back(Vec3D{touch_point1, points[i].h});
@@ -117,10 +119,6 @@ void CatmullROM::control_R(){
 void CatmullROM::build() {
     for (int j = 0; j < points.size() - 1; j++) {
         int sampling = points[j].lengh(points[j + 1]) / path_step;
-
-        /////////////////////////////////
-        std::cout << points[j].lengh(points[j + 1]) <<"\n";
-        /////////////////////////////////
 
         if (!sampling)
             sampling = 1;
