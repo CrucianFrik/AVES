@@ -23,6 +23,46 @@ struct CubicPoly {
 struct Vec2D {
     double x, y; ///???? 2d 3d
     double len() { return sqrt(x * x + y * y); }
+
+    Vec2D operator*(double d) {
+        return Vec2D{x * d, y * d};
+    }
+
+    Vec2D operator/(double d) {
+        return Vec2D{x / d, y / d};
+    }
+
+    Vec2D operator+(Vec2D v)
+    {
+        return Vec2D{x+v.x, y+v.y};
+    }
+
+    Vec2D operator-(Vec2D v)
+    {
+        return Vec2D{x-v.x, y-v.y};
+    }
+
+    bool operator== (Vec2D v)
+    {
+        if (v.x == x && v.y == y)
+            return true;
+        return false;
+    }
+
+    double lengh(Vec2D vec) const {
+        double degree_to_rad = double(M_PI / 180);
+
+        double d_lat = (x - vec.x) * degree_to_rad;
+        double d_long = (y - vec.y) * degree_to_rad;
+
+        double a =
+                pow(sin(d_lat / 2), 2) + cos(x * degree_to_rad) * cos(vec.x * degree_to_rad) * pow(sin(d_long / 2), 2);
+        double c = 2 * atan2(sqrt(a), sqrt(1 - a));
+        double merid_circ_len = 6367;
+        double km_to_m = 1000;
+        double m = merid_circ_len * c * km_to_m;
+        return m;
+    }
 };
 
 
@@ -31,6 +71,8 @@ struct Vec3D {
     double x, y, h;
 
     Vec3D(double _x, double _y, double _h) : x(_x), y(_y), h(_h) {}
+
+    Vec3D(Vec2D vec, double _h) : x(vec.x), y(vec.y), h(_h) {}
 
     Vec3D() {}
 
@@ -44,18 +86,27 @@ struct Vec3D {
     std::string get_str() { return std::to_string(x) + ", " + std::to_string(y) + ", " + std::to_string(h) + "\n"; }
 
     double lengh(Vec3D vec) const {
-        double degree_to_rad = double(M_PI / 180);
+        return sqrt(pow(Vec2D{x, y}.lengh(Vec2D{vec.x, vec.y}), 2)+pow(h - vec.h, 2));
+    }
 
-        double d_lat = (x - vec.x) * degree_to_rad;
-        double d_long = (y - vec.y) * degree_to_rad;
+    Vec2D get_2d()
+    {
+        return Vec2D {x, y};
+    }
 
-        double a =
-                pow(sin(d_lat / 2), 2) + cos(x * degree_to_rad) * cos(vec.x * degree_to_rad) * pow(sin(d_long / 2), 2);
-        double c = 2 * atan2(sqrt(a), sqrt(1 - a));
-        double merid_circ_len = 6367;
-        double km_to_m = 1000;
-        double m = merid_circ_len * c * km_to_m;
-        return m;
+    Vec3D operator+ (Vec3D v)
+    {
+        return Vec3D{x+v.x, y+v.y, h+v.h};
+    }
+
+    Vec3D operator- (Vec3D v)
+    {
+        return Vec3D{x-v.x, y-v.y, h-v.h};
+    }
+
+    Vec3D operator/ (double d)
+    {
+        return Vec3D{x/d, y/d, h/d};
     }
 };
 

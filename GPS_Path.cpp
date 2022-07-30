@@ -1,7 +1,5 @@
 #include "GPS_Path.h"
 
-extern Log logs;
-
 GPS_Path::GPS_Path(const std::string &f_p, const std::string &reading_file_name, PathType type, double m_l, double r_r,
                    int sim = 1000) : step_in_miters(sim), files_path(f_p), min_lengh(m_l), radius_of_reaching(r_r) {
     logs.start_process("INIT GPS_Path");
@@ -21,7 +19,9 @@ GPS_Path::GPS_Path(const std::string &f_p, const std::string &reading_file_name,
     char *t = ctime(&now);
 
     if (type == PathType::curve)
-        path_line = CatmullROM{control_points, files_path + add_time("CatmellROM_path") + ".txt",
+//        path_line = CatmullROM{control_points, files_path + add_time("CatmellROM_path") + ".txt",
+  //                             float(step_in_miters)}.get_path();
+        path_line = CatmullROM{control_points, files_path + "CatmullROM_path_" + ".txt",
                                float(step_in_miters)}.get_path();
     if (type == PathType::polyline)
         path_line = Polyline{control_points, files_path + add_time("Polyline_path") + ".txt",

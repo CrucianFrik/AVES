@@ -3,6 +3,7 @@
 
 #include "libs.h"
 #include "structs.h"
+#include "funcs.h"
 extern Log logs;
 
 //base calass for trajectory construction classes
@@ -66,10 +67,8 @@ private:
 //calass for CatmullROM-curve-trajectory building
 class CatmullROM : public Line {
 public:
-    CatmullROM(const std::vector<Vec3D> &points_, std::string f_add, double ps = 10) : start_p(
-            points_[0].make_similar()),
-                                                                                       end_p(points_[points_.size() -
-                                                                                                     1].make_similar()) {
+    CatmullROM(const std::vector<Vec3D> &points_, std::string f_add, double ps = 10, double min_R_ = 0.001)
+    : start_p(points_[0]), end_p(points_[points_.size() -1]), min_R(min_R_) {
         points = points_;
         files_addres = std::move(f_add);
         path_step = ps;
@@ -78,7 +77,20 @@ public:
             throw "InitError: at least 2 points are required to construct the curve";
         }
         logs.start_process("CATMULLROM BUILDING");
+
+        //control_R();
         build();
+        std::ofstream points_file;
+        points_file.open("points.txt");
+        for (int i = 0; i < points.size(); i++) {
+            const auto digits = std::numeric_limits<double>::digits10;
+            points_file << std::setfill(' ') << std::setw(digits + 4);
+            points_file << std::fixed << std::setprecision(digits) << points[i].x << " ";
+            points_file << std::setfill(' ') << std::setw(digits + 4);
+            points_file << std::fixed << std::setprecision(digits) << points[i].y << " ";
+            points_file << "\n";
+        }
+        points_file.close();
         logs.finish_process();
     }
 
@@ -86,8 +98,11 @@ public:
 
 private:
     Vec3D start_p, end_p;
+    double min_R;
 
     void build() override;
+
+    void control_R();
 
     static void init_cubic_poly(double x0, double x1, double t0, double t1, CubicPoly &p) {
         p.c0 = x0;
