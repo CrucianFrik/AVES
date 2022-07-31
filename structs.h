@@ -118,12 +118,18 @@ struct Vec3D {
 struct Log {
 private:
     std::ofstream file;
+    std::ofstream centers_of_circles_file;
+    std::ofstream touch_point_file;
+    std::ofstream full_points_file; //здесь кллючевые точки маршрута + те, что добавлены при оптимизации
     int shift = 0;
 public:
     Log() {}
 
     void init(std::string file_name){
         file.open(file_name);
+        centers_of_circles_file.open("centers.txt");
+        touch_point_file.open("touch_points.txt");
+        full_points_file.open("points.txt");
     }
 
     void add_log(std::string text) {
@@ -141,6 +147,19 @@ public:
         }
     }
 
+    void add_center(double x, double y){
+        centers_of_circles_file << x << " "<< y << "\n";
+    }
+
+    void add_touch_point(double x, double y){
+        touch_point_file << x << " "<< y << "\n";
+    }
+
+    void add_point(double x, double y)
+    {
+        full_points_file << x << " " << y << "\n";
+    }
+
     void finish_process(std::string text = "finished successfully") {
         if (file) {
             shift--;
@@ -151,6 +170,9 @@ public:
     ~Log() {
         if (file)
             file.close();
+        centers_of_circles_file.close();
+        touch_point_file.close();
+        full_points_file.close();
     }
 
 };

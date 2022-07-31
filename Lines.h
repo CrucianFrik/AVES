@@ -81,17 +81,9 @@ public:
         if (min_R)
             control_R();
         build();
-        std::ofstream points_file;
-        points_file.open("points.txt");
-        for (int i = 0; i < points.size(); i++) {
-            const auto digits = std::numeric_limits<double>::digits10;
-            points_file << std::setfill(' ') << std::setw(digits + 4);
-            points_file << std::fixed << std::setprecision(digits) << points[i].x << " ";
-            points_file << std::setfill(' ') << std::setw(digits + 4);
-            points_file << std::fixed << std::setprecision(digits) << points[i].y << " ";
-            points_file << "\n";
+        for (auto & point : points) {
+            logs.add_point(point.x, point.y);
         }
-        points_file.close();
         logs.finish_process();
     }
 
@@ -123,6 +115,16 @@ private:
 
     static void
     init_centripetal_CR(const Vec3D &p0, const Vec3D &p1, const Vec3D &p2, const Vec3D &p3, CubicPoly &px, CubicPoly &py);
+
+    static void get_bis_coef_and_circ_center(std::vector<Vec3D>& points, int i, double min_R_in_d_lat, double& bis_k, double& bis_b, double& x0, double& y0);
+
+    static void get_touch_points(std::vector<Vec3D>& points, int j, double x0, double y0, double min_R_in_d_lat, Vec2D& touch_point1, Vec2D& touch_point2);
+
+    static void check_order(std::vector<Vec3D>& points_full);
+
+    void add_first_touch_point(std::vector<Vec3D>& points_full, Vec2D touch_point1, Vec2D touch_point2, int i);
+
+    void add_second_touch_point(std::vector<Vec3D>& points_full, Vec2D touch_point1, Vec2D touch_point2, int i, double bis_k, double bis_b);
 };
 
 #endif //AVES_LINES_H
