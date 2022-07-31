@@ -63,6 +63,10 @@ struct Vec2D {
         double m = merid_circ_len * c * km_to_m;
         return m;
     }
+
+    double angel(Vec2D vec){
+        return acos((x*vec.x + y*vec.y) / (len()*vec.len()));
+    }
 };
 
 

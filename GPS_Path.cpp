@@ -19,7 +19,7 @@ GPS_Path::GPS_Path(const std::string &f_p, const std::string &reading_file_name,
     char *t = ctime(&now);
 
     if (type == PathType::curve)
-        path_line = CatmullROM{control_points, files_path + add_time("CatmullROM_path") + ".txt",
+        path_line = CatmullROM{control_points, files_path + "CatmullROM_path" + ".txt",
                                min_radius_of_curvature, float(step_in_miters), }.get_path();
     if (type == PathType::polyline)
         path_line = Polyline{control_points, files_path + add_time("Polyline_path") + ".txt",
