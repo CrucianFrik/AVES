@@ -29,8 +29,6 @@ GPS_Path::GPS_Path(const std::string &f_p, const std::string &reading_file_name,
 };
 
 void GPS_Path::write_in_NMEA() {
-
-
     std::ofstream file;
     file.open(files_path + add_time("GPS_text_NMEA") + ".txt");
     logs.add_log("WRITING IN NMEA");
@@ -61,7 +59,11 @@ Vec3D GPS_Path::get_next_point(Vec3D curr_pos, bool need_to_set = 1) {
     return path_line[p_id];
 }
 
-Vec3D GPS_Path::get_target_point(int m, bool need_to_set = 1) {
+Vec3D get_target_point(){
+  return path_line[target_point_id];
+}
+
+Vec3D GPS_Path::get_point_by_dist(int m, bool need_to_set = 0) {
     int p_id = (m + step_in_miters - 1) / step_in_miters;
     if (need_to_set)
         target_point_id = p_id;
