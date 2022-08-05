@@ -31,7 +31,7 @@ public:
     std::vector<Vec3D> get_path() { return path_line; }
 
     //returns such point, that the length of the path to it is the smallest, but not less than [m]
-    Vec3D get_target_point(int, bool);
+    Vec3D get_point_by_dist(int, bool);
 
     //returns such point:
     // 1) that located at the distance of at least min_lenght from aircraft current position
@@ -40,9 +40,16 @@ public:
 
     Vec3D get_target_point() { return path_line[target_point_id]; }
 
+    //по переданной позиции определяет, достигнута ли текущая целевая точка
     bool check_if_pos_in_point(Vec3D position) {
-        return path_line[target_point_id].lengh(position) < radius_of_reaching;
+        if (path_line[target_point_id].lengh(position) < radius_of_reaching){
+            last_point_id = target_point_id;
+            return true;
+        }
+        return false;
     }
+    
+    void set_target_pos_as_achieved() {last_point_id = target_point_id;} 
 };
 
 #endif //AVES_GPS_PATH_H
