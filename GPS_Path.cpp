@@ -51,9 +51,15 @@ void GPS_Path::write_in_NMEA() {
 }
 
 Vec3D GPS_Path::get_next_point(Vec3D curr_pos, bool need_to_set = 1) {
+    if (last_point_id >= path_line.size())
+      return Vec3D {-1, -1, -1}
     int p_id = last_point_id + 1;
     while (path_line[p_id].lengh(curr_pos) < min_dist)
+    {
         p_id++;
+        if (p_id >= path_line.size())
+          return path_line(path_line.size() - 1];
+    }
     if (need_to_set)
         target_point_id = p_id;
     return path_line[p_id];
