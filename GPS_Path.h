@@ -13,8 +13,8 @@ private:
     std::vector<Vec3D> path_line;
     std::string files_path;
     int step_in_miters;
-    int last_point_id;
-    int target_point_id;
+    int last_point_id; //номер последней посещённей точки
+    int target_point_id; //номер текущей целевой точки
     double radius_of_reaching; // см check_if_pos_in_point(Vec3D)
     double min_dist; // при запросе get_next_point выдаётся точка, принадлежащая к траектории, находящаяся на расстоянии не меньше min_dist
     double min_radius_of_curvature; // минимальный радиус кривизны траектории в метрах
