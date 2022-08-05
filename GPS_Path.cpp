@@ -59,10 +59,6 @@ Vec3D GPS_Path::get_next_point(Vec3D curr_pos, bool need_to_set = 1) {
     return path_line[p_id];
 }
 
-Vec3D get_target_point(){
-  return path_line[target_point_id];
-}
-
 Vec3D GPS_Path::get_point_by_dist(int m, bool need_to_set = 0) {
     int p_id = (m + step_in_miters - 1) / step_in_miters;
     if (need_to_set)
