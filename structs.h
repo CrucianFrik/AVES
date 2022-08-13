@@ -157,7 +157,9 @@ public:
 
     void add_point(double x, double y)
     {
-        full_points_file << x << " " << y << "\n";
+        const auto digits = std::numeric_limits<double>::digits10;
+        full_points_file << std::setfill(' ') << std::setw(digits + 4);
+        full_points_file << std::fixed << std::setprecision(digits) << x << " " << y << "\n";
     }
 
     void finish_process(std::string text = "finished successfully") {

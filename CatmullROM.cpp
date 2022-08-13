@@ -1,4 +1,5 @@
 #include "Lines.h"
+#define SKIPPOINT else {points_full.pop_back(); points_full.pop_back(); points_full.push_back(points[i]);}
 
 void CatmullROM::get_bis_coef_and_circ_center(std::vector<Vec3D>& points, int i, double min_R_in_d_lat, double& bis_k, double& bis_b, double& x0, double& y0)
 {
@@ -93,12 +94,18 @@ void CatmullROM::add_second_touch_point(std::vector<Vec3D>& points_full, Vec2D t
             if (angle_touch1_i_old > angle_next_i_old)
             {
                 points_full.push_back(Vec3D{touch_point1, points[i].h});
+                std::cout << i << " ifif\n";
             }
+            SKIPPOINT
+            std::cout << i << " skip1\n";
         } else {
             if (angle_touch2_i_old > angle_next_i_old)
             {
                 points_full.push_back(Vec3D{touch_point2, points[i].h});
+                std::cout << i << " ifelse\n";
             }
+            SKIPPOINT
+            std::cout << i << " skip2\n";
         }
     }
     else {
@@ -106,14 +113,19 @@ void CatmullROM::add_second_touch_point(std::vector<Vec3D>& points_full, Vec2D t
             if (angle_touch1_i_old > angle_next_i_old)
             {
                 points_full.push_back(Vec3D{touch_point1, points[i].h});
+                std::cout << i << " elseif\n";
             }
+            SKIPPOINT
+            std::cout << i << " skip3\n";
         }
         else {
             if (angle_touch2_i_old > angle_next_i_old)
             {
                 points_full.push_back(Vec3D{touch_point2, points[i].h});
+                std::cout << i << " elseelse\n";
             }
-
+            SKIPPOINT
+            std::cout << i << " skip4\n";
         }
     }
 }
@@ -185,8 +197,11 @@ void CatmullROM::build() {
 
     std::ofstream file;
     file.open(files_addres);
-    for (auto &i: cruve)
-        file << std::to_string(i.x) << " " << std::to_string(i.y) << " " << std::to_string(i.h) << std::endl;
+    for (auto &i: cruve) {
+        const auto digits = std::numeric_limits<double>::digits10;
+        file << std::setfill(' ') << std::setw(digits + 4);
+        file << std::fixed << std::setprecision(digits) << std::to_string(i.x) << " " << std::to_string(i.y) << " " << std::to_string(i.h) << std::endl;
+    }
     file.close();
 }
 

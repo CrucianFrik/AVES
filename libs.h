@@ -6,5 +6,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <iomanip>
+#include <limits>
 
 #endif //AVES_LIBS_H
