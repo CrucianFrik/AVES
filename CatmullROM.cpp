@@ -84,27 +84,36 @@ void CatmullROM::add_first_touch_point(std::vector<Vec3D>& points_full, Vec2D to
 void CatmullROM::add_second_touch_point(std::vector<Vec3D>& points_full, Vec2D touch_point1, Vec2D touch_point2, int i, double bis_k, double bis_b) {
     Vec3D prev_circ_point = points_full[points_full.size() - 2];
     double angle_touch1_i_old = (prev_circ_point.get_2d() - points[i].get_2d()).angel(touch_point1 - points[i].get_2d());
-    double angle_touch2_i_old = (prev_circ_point.get_2d() - points[i].get_2d()).angel(touch_point1 - points[i].get_2d());
+    double angle_touch2_i_old = (prev_circ_point.get_2d() - points[i].get_2d()).angel(touch_point2 - points[i].get_2d());
     double angle_next_i_old = (prev_circ_point.get_2d() - points[i].get_2d()).angel(points[i+1].get_2d() - points[i].get_2d());
 
     if (points[i].get_2d().lengh(prev_circ_point.get_2d()) > min_R/10) {
         if ((bis_k * prev_circ_point.x + bis_b - prev_circ_point.y) *
             (bis_k * touch_point1.x + bis_b - touch_point1.y) < 0) {
             if (angle_touch1_i_old > angle_next_i_old)
+            {
                 points_full.push_back(Vec3D{touch_point1, points[i].h});
+            }
         } else {
             if (angle_touch2_i_old > angle_next_i_old)
+            {
                 points_full.push_back(Vec3D{touch_point2, points[i].h});
+            }
         }
     }
     else {
         if (points[i].get_2d().lengh(touch_point1) < points[i].get_2d().lengh(touch_point2)) {
             if (angle_touch1_i_old > angle_next_i_old)
+            {
                 points_full.push_back(Vec3D{touch_point1, points[i].h});
+            }
         }
         else {
             if (angle_touch2_i_old > angle_next_i_old)
+            {
                 points_full.push_back(Vec3D{touch_point2, points[i].h});
+            }
+
         }
     }
 }
